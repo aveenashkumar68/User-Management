@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e1e5eb;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #3498db;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h2 i {
+            font-size: 1.3rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button.secondary {
+            background-color: #2ecc71;
+        }
+
+        button.secondary:hover {
+            background-color: #27ae60;
+        }
+
+        button.danger {
+            background-color: #e74c3c;
+        }
+
+        button.danger:hover {
+            background-color: #c0392b;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .users-list {
+            margin-top: 20px;
+        }
+
+        .user-item {
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #3498db;
+        }
+
+        .user-item.active-user {
+            border-left-color: #2ecc71;
+        }
+
+        .user-item.inactive-user {
+            border-left-color: #95a5a6;
+        }
+
+        .user-info h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .user-info p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .status-active {
+            background-color: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .status-inactive {
+            background-color: #f2f3f4;
+            color: #7f8c8d;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .role-admin {
+            background-color: #fef9e7;
+            color: #f39c12;
+        }
+
+        .role-employee {
+            background-color: #e8f6f3;
+            color: #16a085;
+        }
+
+        .message {
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.success {
+            background-color: #d5f4e6;
+            color: #27ae60;
+            border-left: 4px solid #2ecc71;
+            display: block;
+        }
+
+        .message.error {
+            background-color: #fde8e6;
+            color: #e74c3c;
+            border-left: 4px solid #e74c3c;
+            display: block;
+        }
+
+        .message.info {
+            background-color: #e8f4fc;
+            color: #3498db;
+            border-left: 4px solid #3498db;
+            display: block;
+        }
+
+        .admin-check {
+            background-color: #fef9e7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-check span {
+            font-weight: 600;
+        }
+
+        .admin-check .yes {
+            color: #2ecc71;
+        }
+
+        .admin-check .no {
+            color: #e74c3c;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e5eb;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-users-cog"></i> User Management System</h1>
+            <p class="subtitle">Manage users, roles, and active status with ease</p>
+        </header>
+
+        <div class="message" id="message"></div>
+
+        <div class="content">
+            <div class="left-column">
+                <div class="card">
+                    <h2><i class="fas fa-user-plus"></i> Register New User</h2>
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" required placeholder="Enter user's full name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required placeholder="Enter user's email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="role">User Role</label>
+                            <select id="role" name="role" required>
+                                <option value="">Select a role</option>
+                                <option value="admin">Admin</option>
+                                <option value="employee">Employee</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="secondary">
+                            <i class="fas fa-user-check"></i> Register User
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-edit"></i> Update User</h2>
+                    <form id="updateForm">
+                        <div class="form-group">
+                            <label for="updateId">User ID</label>
+                            <input type="text" id="updateId" name="id" required placeholder="Enter user ID to update">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="updateName">Full Name (optional)</label>
+                            <input type="text" id="updateName" name="name" placeholder="Enter new name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="updateRole">User Role (optional)</label>
+                            <select id="updateRole" name="role">
+                                <option value="">Select a new role</option>
+                                <option value="admin">Admin</option>
+                                <option value="employee">Employee</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="updateActive">Active Status (optional)</label>
+                            <select id="updateActive" name="active">
+                                <option value="">Select active status</option>
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit">
+                            <i class="fas fa-save"></i> Update User
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-user-times"></i> Delete User</h2>
+                    <form id="deleteForm">
+                        <div class="form-group">
+                            <label for="deleteId">User ID</label>
+                            <input type="text" id="deleteId" name="id" required placeholder="Enter user ID to delete">
+                        </div>
+                        
+                        <button type="submit" class="danger">
+                            <i class="fas fa-trash-alt"></i> Delete User
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="right-column">
+                <div class="card">
+                    <h2><i class="fas fa-tasks"></i> User Actions</h2>
+                    <div class="actions">
+                        <button id="getAllUsers">
+                            <i class="fas fa-users"></i> Get All Users
+                        </button>
+                        <button id="getActiveUsers" class="secondary">
+                            <i class="fas fa-user-check"></i> Get Active Users
+                        </button>
+                        <button id="checkAdmin">
+                            <i class="fas fa-user-shield"></i> Check Admin Status
+                        </button>
+                    </div>
+
+                    <div id="adminCheckResult" class="admin-check" style="display: none;">
+                        <span>Admin User Exists:</span>
+                        <span id="adminStatus" class="no">Unknown</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-list"></i> Users List</h2>
+                    <div id="usersList" class="users-list">
+                        <p style="text-align: center; color: #7f8c8d; padding: 20px;">
+                            <i class="fas fa-info-circle"></i> Click "Get All Users" or "Get Active Users" to display users
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>User Management System &copy; 2023 | Backend API running at http://localhost:5000</p>
+        </footer>
+    </div>
+
+    <script>
+        // Base URL for API calls
+        const API_BASE_URL = 'http://localhost:5000/api/users';
+        
+        // DOM elements
+        const messageEl = document.getElementById('message');
+        const usersListEl = document.getElementById('usersList');
+        const adminCheckResult = document.getElementById('adminCheckResult');
+        const adminStatus = document.getElementById('adminStatus');
+
+        // Show message function
+        function showMessage(text, type = 'info') {
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Clear message function
+        function clearMessage() {
+            messageEl.style.display = 'none';
+        }
+
+        // Format date from timestamp
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        // Display users in the list
+        function displayUsers(users) {
+            if (users.length === 0) {
+                usersListEl.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 20px;"><i class="fas fa-user-slash"></i> No users found</p>';
+                return;
+            }
+            
+            usersListEl.innerHTML = '';
+            
+            users.forEach(user => {
+                const userItem = document.createElement('div');
+                userItem.className = `user-item ${user.active ? 'active-user' : 'inactive-user'}`;
+                
+                userItem.innerHTML = `
+                    <div class="user-info">
+                        <h3>${user.name || 'Unnamed User'}</h3>
+                        <p>
+                            <i class="fas fa-envelope"></i> ${user.email || 'No email'}
+                            <span class="role-badge ${user.role === 'admin' ? 'role-admin' : 'role-employee'}">${user.role || 'Unknown'}</span>
+                            <span class="status-badge ${user.active ? 'status-active' : 'status-inactive'}">${user.active ? 'Active' : 'Inactive'}</span>
+                        </p>
+                        <p style="margin-top: 5px; font-size: 0.8rem;">
+                            <i class="fas fa-id-card"></i> ID: ${user._id} 
+                            <span style="margin-left: 15px;">
+                                <i class="far fa-clock"></i> Created: ${formatDate(user.createdAt)}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="user-actions">
+                        <button class="update-btn" data-id="${user._id}" title="Use this ID to update">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="delete-btn danger" data-id="${user._id}" title="Use this ID to delete">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+                
+                usersListEl.appendChild(userItem);
+            });
+            
+            // Add event listeners to the action buttons
+            document.querySelectorAll('.update-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-id');
+                    document.getElementById('updateId').value = userId;
+                    showMessage(`User ID ${userId} copied to update form. Fill other fields you want to update.`, 'info');
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-id');
+                    document.getElementById('deleteId').value = userId;
+                    showMessage(`User ID ${userId} copied to delete form.`, 'info');
+                });
+            });
+        }
+
+        // Register User Form
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearMessage();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                role: document.getElementById('role').value
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage(`User "${formData.name}" registered successfully!`, 'success');
+                    this.reset();
+                } else {
+                    showMessage(`Error: ${data.error || 'Registration failed'}`, 'error');
+                }
+            } catch (error) {
+                showMessage(`Network error: ${error.message}`, 'error');
+            }
+        });
+
+        // Update User Form
+        document.getElementById('updateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearMessage();
+            
+            const userId = document.getElementById('updateId').value;
+            const updateData = {};
+            
+            // Only include fields that have values
+            if (document.getElementById('updateName').value) {
+                updateData.name = document.getElementById('updateName').value;
+            }
+            if (document.getElementById('updateRole').value) {
+                updateData.role = document.getElementById('updateRole').value;
+            }
+            if (document.getElementById('updateActive').value) {
+                updateData.active = document.getElementById('updateActive').value === 'true';
+            }
+            
+            // Check if there's any data to update
+            if (Object.keys(updateData).length === 0) {
+                showMessage('Please provide at least one field to update', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage(`User with ID ${userId} updated successfully!`, 'success');
+                    this.reset();
+                } else {
+                    showMessage(`Error: ${data.error || 'Update failed'}`, 'error');
+                }
+            } catch (error) {
+                showMessage(`Network error: ${error.message}`, 'error');
+            }
+        });
+
+        // Delete User Form
+        document.getElementById('deleteForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearMessage();
+            
+            const userId = document.getElementById('deleteId').value;
+            
+            // Confirm deletion
+            if (!confirm(`Are you sure you want to delete user with ID: ${userId}?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/${userId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage(`User with ID ${userId} deleted successfully!`, 'success');
+                    this.reset();
+                } else {
+                    showMessage(`Error: ${data.error || 'Deletion failed'}`, 'error');
+                }
+            } catch (error) {
+                showMessage(`Network error: ${error.message}`, 'error');
+            }
+        });
+
+        // Get All Users Button
+        document.getElementById('getAllUsers').addEventListener('click', async function() {
+            clearMessage();
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayUsers(data);
+                    showMessage(`Loaded ${data.length} users`, 'success');
+                } else {
+                    showMessage(`Error: ${data.error || 'Failed to fetch users'}`, 'error');
+                }
+            } catch (error) {
+                showMessage(`Network error: ${error.message}`, 'error');
+            }
+        });
+
+        // Get Active Users Button
+        document.getElementById('getActiveUsers').addEventListener('click', async function() {
+            clearMessage();
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/active`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayUsers(data);
+                    showMessage(`Loaded ${data.length} active users`, 'success');
+                } else {
+                    showMessage(`Error: ${data.error || 'Failed to fetch active users'}`, 'error');
+                }
+            } catch (error) {
+                showMessage(`Network error: ${error.message}`, 'error');
+            }
+        });
+
+        // Check Admin Button
+        document.getElementById('checkAdmin').addEventListener('click', async function() {
+            clearMessage();
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/checkAdmin`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    adminCheckResult.style.display = 'flex';
+                    if (data.hasAdmin) {
+                        adminStatus.textContent = 'Yes';
+                        adminStatus.className = 'yes';
+                        showMessage('Admin user exists in the system', 'success');
+                    } else {
+                        adminStatus.textContent = 'No';
+                        adminStatus.className = 'no';
+                        showMessage('No admin user found in the system', 'info');
+                    }
+                } else {
+                    showMessage(`Error: ${data.error || 'Failed to check admin status'}`, 'error');
+                }
+            } catch (error) {
+                showMessage(`Network error: ${error.message}`, 'error');
+            }
+        });
+
+        // Initial message
+        showMessage('User Management System Frontend is ready. Make sure your backend server is running on http://localhost:5000', 'info');
+    </script>
+</body>
+</html>
