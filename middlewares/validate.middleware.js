@@ -1,11 +1,24 @@
+import jwt from "jsonwebtoken"
+
 export const validateUser = (req, res, next) => {
-  const {name, email, role} = req.body;
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
 
-  if(!email || !name || !role) {
-    return res.status(400).json({
-      error: "fields are missing"
-    });
+    if(!token) {
+      return res.status(401).json({
+        success: false,
+        error: "No token provided"
+      });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    req.user = decoded;
+
+    next();
+  } catch(error) {
+    res.status(401).json({
+      success: false, 
+      error: "Invalide token"
+    })
   }
-
-  next();
 }
+

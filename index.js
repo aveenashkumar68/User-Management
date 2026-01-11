@@ -8,7 +8,7 @@ dotenv.config();
 
 const app = express();
 
-// Enable CORS - Add this middleware BEFORE your routes
+
 app.use(cors({
   origin: ['http://127.0.0.1:5500', 'http://localhost:5500', 'http://localhost:5000'],
   credentials: true,
